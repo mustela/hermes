@@ -1,0 +1,163 @@
+<ol class="breadcrumb">
+  <li><a ui-sref="home">Projects</a></div>
+  <li><a ui-sref="members({projectId:ctrl.project.id})">Members</a></div>
+  <li class="active">{{ctrl.member.name}}</div>
+</ol>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-1">
+      <a class="thumbnail" >
+       <img class="img-responsive" width="90px" ng-src="{{ctrl.member.person.imageUrl}}">
+      </a>
+    </div>
+    <div class="col-lg-6">
+     <h2>
+      {{ctrl.member.person.name}}<br/>
+      <small>{{ctrl.project.name}}</small>
+     </h2>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-sm-4">
+      <ul class="list-group">
+         <div class="list-group-item list-group-item-info">
+          Current stats
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{ctrl.query.stories.stories.length}}</span>
+          <i class="fa fa-minus"></i>
+          Total stories
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{ctrl.stats.types.feature}}</span>
+          <i class="fa fa-star text-warning" tooltip="Feature"></i>
+          Features
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{ctrl.stats.types.chore}}</span>
+          <i class="fa fa-cog text-info" tooltip="Chore"></i>
+          Chores
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{ctrl.stats.types.bug}}</span>
+          <i class="fa fa-bug text-danger" tooltip="Bug"></i>
+          Bugs
+        </div>
+      </ul>
+    </div>
+    <div class="col-sm-4">
+      <div class="list-group">
+        <div class="list-group-item list-group-item-info">
+          <a ng-click="ctrl.filterByState('')">States</a>
+        </div>
+        <div class="list-group-item ">
+          <span class="badge">{{ctrl.stats.states.started}}</span>
+          <i class="fa fa-play text-success"></i>
+          <a class="active" ng-click="ctrl.filterByState('started')">Started</a>
+        </div>
+        <div class="list-group-item ">
+          <span class="badge">{{ctrl.stats.states.finished}}</span>
+          <i class="fa fa-check-circle-o text-success"></i>
+          <a class="active" ng-click="ctrl.filterByState('finished')">Finished</a>
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{ctrl.stats.states.accepted}}</span>
+          <i class="fa fa-smile-o text-success"></i>
+          <a ng-click="ctrl.filterByState('accepted')">Accepted</a>
+        </div>
+        
+        <div class="list-group-item">
+          <span class="badge">{{ctrl.stats.states.delivered}}</span>
+          <i class="fa fa-rocket text-warning"></i>
+          <a ng-click="ctrl.filterByState('delivered')">Delivered</a>
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{ctrl.stats.states.unstartedTotal}}</span>
+          <i class="fa fa-square-o"></i>
+          <a ng-click="ctrl.filterByState('unstarted')">Unstarted</a>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="col-sm-4">
+      <div class="panel panel-default">
+        <div class="panel-heading" ng-click="ctrl.filterByLabel('')">Labels</div>
+        <div class="panel-body">
+            <ul class="list-inline">
+                <li ng-repeat="(key, value) in ctrl.stats.labels">
+                  <a ng-click="ctrl.filterByLabel(key)">
+                    <span  class="label label-warning">{{key}} <span class="badge">{{value}}</span></span>
+                  </a>
+                </li>
+            </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-1">
+             <a ng-click="ctrl.showDescriptions();">
+              <i class="fa fa-2x" tooltip="Show descriptions" ng-class="ctrl.show.description?'fa-caret-square-o-down':'fa-caret-square-o-up'"></i>
+            </a>
+          </div>
+           <div class="col-md-3">
+            <h3 class="panel-title">Current Stories <small ng-if="ctrl.filter.state.current_state">[{{ctrl.filter.state.current_state | ucfirst}}]</small></h3>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="list-group" >
+          <div class="list-group-item" ng-repeat="story in filteredStories = (ctrl.query.stories.stories |filter:ctrl.filter.state|filter:ctrl.labels(ctrl.filter.label)| orderBy:['story_type','created_at']:true)">
+            <div class="row" >
+               <div class="col-lg-1">
+                  <i ng-if="story.story_type=='feature'" class="fa fa-2x fa-star text-warning" tooltip="Feature"></i>
+                  <i ng-if="story.story_type=='chore'" class="fa fa-2x fa-cog text-info" tooltip="Chore"></i>
+                  <i ng-if="story.story_type=='bug'" class="fa fa-2x fa-bug text-danger" tooltip="Bug"></i>
+                  <i ng-if="story.story_type=='release'" class="fa fa-2x fa-flag-checkered" tooltip="Release"></i>
+                  <i ng-if="story.story_type=='feature' && !story.estimate" class="fa fa-exclamation-triangle fa-2x text-danger" tooltip="Need estimation"></i>
+              </div>
+              <div class="col-lg-6">
+                  <p class="lead">{{story.name}}</p>
+                  <p ng-show="ctrl.show.description" class="animated" ng-class="{'fadeIn':ctrl.show.description}"><small>{{story.description}}</small></p>
+                  <p>
+                    <small class="text-warning" ng-repeat="label in story.labels">
+                      <strong>{{label.name}}{{$last ? '' : ', '}}</strong>
+                    </small>
+                  </p>
+              </div>
+              <div class="col-lg-2">
+                <i ng-if="story.current_state=='finished'" class="fa fa-2x fa-check-circle-o text-success" tooltip="Finished"></i>
+                <i ng-if="story.current_state=='delivered'" class="fa fa-2x fa-rocket text-warning" tooltip="Delivered"></i>
+                <i ng-if="story.current_state=='planned'" class="fa fa-2x fa-square-o" tooltip="Unstarted"></i>
+                <i ng-if="story.current_state=='unscheduled'" class="fa fa-2x fa-square-o" tooltip="Unstarted"></i>
+                <i ng-if="story.current_state=='unstarted'" class="fa fa-2x fa fa-square-o" tooltip="Unstarted"></i>
+                <i ng-if="story.current_state=='started'" class="fa fa-2x fa-play text-success" tooltip="Started"></i>
+                <i ng-if="story.current_state=='accepted'" class="fa fa-2x fa-smile-o" tooltip="Accepted"></i>
+              </div>
+              <div class="col-lg-2">
+                <span am-time-ago="story.created_at"></span>
+              </div>
+              
+              <div class="col-lg-2">
+                <a target="_blank" href="https://www.pivotaltracker.com/story/show/{{story.id}}">{{story.id}}</a>
+              </div>
+            </div>
+        </div>
+        <div ng-show="filteredStories.length==0">
+          <div class="bs-callout bs-callout-default" >
+            <h4>No results for [{{ctrl.filter.state}}]</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
