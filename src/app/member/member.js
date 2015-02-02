@@ -12,13 +12,13 @@ angular
         controllerAs:'ctrl',
         resolve:{
           project:function($stateParams, Pivotal){
-            return Pivotal.project($stateParams.projectId).get();
+            return Pivotal.project.get($stateParams.projectId);
           }, 
           query:function($stateParams, Pivotal){
-            return Pivotal.member($stateParams.projectId, $stateParams.memberId).stories();
+            return Pivotal.member.stories($stateParams.projectId, $stateParams.memberId);
           },
           member:function($stateParams, Pivotal){
-            return Pivotal.member($stateParams.projectId, $stateParams.memberId).get();
+            return Pivotal.member.get($stateParams.projectId, $stateParams.memberId);
           }
         }
       }

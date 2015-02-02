@@ -1,7 +1,7 @@
 <ol class="breadcrumb">
   <li><a ui-sref="home">Projects</a></div>
   <li><a ui-sref="members({projectId:ctrl.project.id})">Members</a></div>
-  <li class="active">{{ctrl.member.name}}</div>
+  <li class="active">{{ctrl.member.person.name}}</div>
 </ol>
 <div class="container">
   <div class="row">
@@ -12,8 +12,9 @@
     </div>
     <div class="col-lg-6">
      <h2>
-      {{ctrl.member.person.name}}<br/>
-      <small>{{ctrl.project.name}}</small>
+      {{ctrl.member.person.name}} <small>({{ctrl.member.person.email}})</small><br/>
+      <a href="https://www.pivotaltracker.com/n/projects/{{ctrl.project.id}}" target="_blank"><small>{{ctrl.project.name}}</small></a>
+      
      </h2>
     </div>
   </div>
@@ -52,7 +53,9 @@
         <div class="list-group-item list-group-item-info">
           <a ng-click="ctrl.filterByState('')">States</a>
         </div>
-        <div class="list-group-item ">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="list-group-item ">
           <span class="badge">{{ctrl.stats.states.started}}</span>
           <i class="fa fa-play text-success"></i>
           <a class="active" ng-click="ctrl.filterByState('started')">Started</a>
@@ -67,17 +70,31 @@
           <i class="fa fa-smile-o text-success"></i>
           <a ng-click="ctrl.filterByState('accepted')">Accepted</a>
         </div>
+        <div class="list-group-item">
+          <span class="badge">{{ctrl.stats.states.planned}}</span>
+          <i class="fa fa-calendar text-success"></i>
+          <a ng-click="ctrl.filterByState('planned')">Planned</a>
+        </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="list-group-item">
+              <span class="badge">{{ctrl.stats.states.delivered}}</span>
+              <i class="fa fa-rocket text-warning"></i>
+              <a ng-click="ctrl.filterByState('delivered')">Delivered</a>
+            </div>
+            <div class="list-group-item">
+              <span class="badge">{{ctrl.stats.states.unstarted}}</span>
+              <i class="fa fa-square-o"></i>
+              <a ng-click="ctrl.filterByState('unstarted')">Unstarted</a>
+            </div>
+            <div class="list-group-item">
+              <span class="badge">{{ctrl.stats.states.unscheduled}}</span>
+              <i class="fa fa-calendar-o"></i>
+              <a ng-click="ctrl.filterByState('unscheduled')">Unscheduled</a>
+            </div>
+          </div>
+        </div>
         
-        <div class="list-group-item">
-          <span class="badge">{{ctrl.stats.states.delivered}}</span>
-          <i class="fa fa-rocket text-warning"></i>
-          <a ng-click="ctrl.filterByState('delivered')">Delivered</a>
-        </div>
-        <div class="list-group-item">
-          <span class="badge">{{ctrl.stats.states.unstartedTotal}}</span>
-          <i class="fa fa-square-o"></i>
-          <a ng-click="ctrl.filterByState('unstarted')">Unstarted</a>
-        </div>
       </div>
     </div>
  
@@ -136,8 +153,8 @@
               <div class="col-lg-2">
                 <i ng-if="story.current_state=='finished'" class="fa fa-2x fa-check-circle-o text-success" tooltip="Finished"></i>
                 <i ng-if="story.current_state=='delivered'" class="fa fa-2x fa-rocket text-warning" tooltip="Delivered"></i>
-                <i ng-if="story.current_state=='planned'" class="fa fa-2x fa-square-o" tooltip="Unstarted"></i>
-                <i ng-if="story.current_state=='unscheduled'" class="fa fa-2x fa-square-o" tooltip="Unstarted"></i>
+                <i ng-if="story.current_state=='planned'" class="fa fa-2x fa-calendar" tooltip="Planned"></i>
+                <i ng-if="story.current_state=='unscheduled'" class="fa fa-2x fa-calendar-o" tooltip="Unschedule"></i>
                 <i ng-if="story.current_state=='unstarted'" class="fa fa-2x fa fa-square-o" tooltip="Unstarted"></i>
                 <i ng-if="story.current_state=='started'" class="fa fa-2x fa-play text-success" tooltip="Started"></i>
                 <i ng-if="story.current_state=='accepted'" class="fa fa-2x fa-smile-o" tooltip="Accepted"></i>

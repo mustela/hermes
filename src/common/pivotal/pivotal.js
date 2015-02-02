@@ -8,81 +8,148 @@
     var base;
     var localMembers = [];
 
-    var Factory = function(){
+    /*
+    
+    BASE DEFINITION 
+
+    */
+    var Base = function(){
       this.apiToken = ApiConfig.pivotal.apiToken;
       this.rest = new Rest('https://www.pivotaltracker.com/services/v5/', {headers:{'X-TrackerToken':this.apiToken}});
-      base = this;
+      this.defaultProject = ApiConfig.pivotal.defaultProject;
+    };
+ 
+
+    /*
+
+    MEMBER DEFINITION
+
+    */
+    var Member = function(projectApi){
+      this.projectApi = projectApi;
+
+      Base.call(this);
     };
 
-    Factory.prototype.projects = {
-      all : function(){
-        return base.rest.get('projects');
-      },
+    Member.prototype = Object.create(Base.prototype);
 
-      members : function(projectId){
-        return base.rest.get('projects/{projectId}/memberships'.supplant({projectId:projectId}));
-      }
+    Member.prototype.stories = function(projectId, memberId){
+        return this.rest.get('projects/{projectId}/search?query=owner:{memberId}'.supplant({projectId:projectId,memberId:memberId}));
     };
 
-
-    Factory.prototype.project = function(projectId){
-      this.projectId = projectId;
-
-      this.members = function(){
+    Member.prototype.get = function(projectId, memberId){
+        var self = this;
+        var memberFound = false;
         var deferred = $q.defer();
-        base.rest.get('projects/{projectId}/memberships'.supplant({projectId:this.projectId})).then(function(members){
+
+
+        this.all(projectId).then(function(members){
+          angular.forEach(members,function(member){
+
+            if ( member.person.id == memberId){
+
+              if ( !angular.isDefined(member.imageUrl)){
+                member.person.imageUrl = Utils.prototype.getGravatarImageUrl(member.person.email);
+              }
+              deferred.resolve(member);
+              return;
+            }
+          });
+        });
+
+        return deferred.promise;
+    };
+
+    Member.prototype.all = function(projectId){
+      var deferred = $q.defer();
+
+        //TODO: We need to implement a better way of dealing with members cache
+        if (localMembers.length>0){
+          deferred.resolve(localMembers);
+          return deferred.promise;
+        }
+
+        this.rest.get('projects/{projectId}/memberships'.supplant({projectId:projectId})).then(function(members){
 
           // We have to save the members, because there is no way to get information about one single person :(
           localMembers = members;
+
+
+          var MD5 = new Hashes.MD5();
+          angular.forEach(members, function(member){
+            member.person.imageUrl = "http://www.gravatar.com/avatar/{md5}".supplant({md5:MD5.hex(member.person.email)});
+          });
 
           deferred.resolve(members);
         });
 
         return deferred.promise;
-      };
-
-      this.get = function(){
-        return base.rest.get('projects/{projectId}'.supplant({projectId:this.projectId}));
-      };
-
-      return this;
     };
 
-    Factory.prototype.member = function(projectId, memberId){
-      this.memberId = memberId;
-      this.projectId = projectId;
+    /*
+    
+    PROJECT DEFINITION 
 
-      this.stories = function(){
-        return base.rest.get('projects/{projectId}/search?query=owner:{memberId}'.supplant({projectId:this.projectId,memberId:memberId}));
-      };
+    */
+    var Project = function(memberApi){
+      this.memberApi = memberApi;
 
-      this.currentStories = function(){
-        return base.rest.get('projects/{projectId}/search?query=owner:{memberId} -includedone:true'.supplant({projectId:this.projectId,memberId:memberId}));
-      };
+      Base.call(this);
+    };
 
-      this.get = function(){
+    Project.prototype = Object.create(Base.prototype);
+
+    Project.prototype.teams = function(projectId){
+
+        var teamDeferred = $q.defer();
+        var teams = [];
         var self = this;
-        var memberFound = false;
-        var deferred = $q.defer();
 
-        angular.forEach(localMembers,function(member){
-          if ( member.person.id == self.memberId){
-            if ( !angular.isDefined(member.imageUrl)){
-              member.person.imageUrl = Utils.prototype.getGravatarImageUrl(member.person.email);
+        if ( angular.isDefined(ApiConfig.pivotal.projects)){
+          angular.forEach(ApiConfig.pivotal.projects, function(project){
+            if ( project.id == projectId){
+              
+              angular.forEach(project.teams,function( configTeam ){
+                var team = {
+                    name:configTeam.name,
+                    members:[] 
+                  };
+
+                angular.forEach(configTeam.members,function(memberTeam){
+                  self.memberApi.get(projectId, memberTeam).then(function(membership){
+                    team.members.push(membership);
+                  });
+
+                });
+
+                teams.push(team);
+              });
+
+              return;
             }
+          });
+        }
 
-            deferred.resolve(member);
-            return;
-          }
-        });
+        teamDeferred.resolve(teams);
 
-        return deferred.promise;
-
+        return teamDeferred.promise;
       };
 
-      return this;
+    Project.prototype.get = function(projectId){
+        return this.rest.get('projects/{projectId}'.supplant({projectId:projectId}));
     };
 
-    return new Factory();
+    Project.prototype.all = function(){
+        return this.rest.get('projects');
+    };
+
+    var Api = function(){
+    };
+
+    Api.prototype.project = new Project(Object.create(Member.prototype));
+    Api.prototype.member = new Member(Object.create(Project.prototype));
+
+    return new Api();
+
   }] );
 })();

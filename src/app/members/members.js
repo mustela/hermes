@@ -1,9 +1,10 @@
-
 angular
   .module('hermes.members',[])
   .config(function config( $stateProvider) {
 
-    $stateProvider.state( 'members', {
+    $stateProvider
+
+    .state( 'members', {
       url: 'projects/{projectId}/members',
       views: {
         "main": {
@@ -12,10 +13,10 @@ angular
           controllerAs:'ctrl',
           resolve:{
             members:function($stateParams, Pivotal){
-              return Pivotal.project($stateParams.projectId).members();
+              return Pivotal.member.all($stateParams.projectId);
             },
             project:function($stateParams, Pivotal){
-              return Pivotal.project($stateParams.projectId).get();
+              return Pivotal.project.get($stateParams.projectId);
             }
           }
         }
@@ -25,14 +26,15 @@ angular
 })
 
 
-.controller( 'MembersCtrl', function MembersController( members, project ) {
+.controller( 'MembersCtrl', function MembersController( members, project, Pivotal) {
+
   this.members = members;
   this.project = project;
-  
-  var MD5 = new Hashes.MD5();
+  this.teams = [];
+  var self = this;
 
-  angular.forEach(members, function(member){
-    member.person.imageUrl = "http://www.gravatar.com/avatar/{md5}".supplant({md5:MD5.hex(member.person.email)});
+  Pivotal.project.teams(this.project.id).then(function(teams){
+    self.teams = teams;
   });
 
 })

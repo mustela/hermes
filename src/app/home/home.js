@@ -41,12 +41,14 @@ angular.module( 'hermes.home', [
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController(Pivotal ) {
+.controller( 'HomeCtrl', function HomeController(Pivotal) {
  
   var self = this;
-  Pivotal.projects.all().then(function(projects){
+  
+  Pivotal.project.all().then(function(projects){
     self.projects = projects;
   });
+
 })
 
 ;
