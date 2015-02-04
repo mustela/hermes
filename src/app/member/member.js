@@ -1,6 +1,6 @@
 
 angular
-.module('hermes.member',[])
+.module('hermes.member',['components.stories.stateLabel'])
 .config(function config( $stateProvider) {
 
   $stateProvider.state( 'member', {

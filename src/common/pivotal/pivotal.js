@@ -34,7 +34,7 @@
     Member.prototype = Object.create(Base.prototype);
 
     Member.prototype.stories = function(projectId, memberId){
-        return this.rest.get('projects/{projectId}/search?query=owner:{memberId}'.supplant({projectId:projectId,memberId:memberId}));
+        return this.rest.get('projects/{projectId}/search?query=owner:{memberId} and -state:unscheduled'.supplant({projectId:projectId,memberId:memberId}));
     };
 
     Member.prototype.get = function(projectId, memberId){
