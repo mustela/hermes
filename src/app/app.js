@@ -7,6 +7,7 @@ angular.module( 'hermes', [
   'hermes.members',
   'hermes.member',
   'ui.router',
+  'ui.bootstrap',
   'nvd3ChartDirectives',
   'angularMoment',
   'angular.filter'

@@ -1,7 +1,31 @@
 <ol class="breadcrumb">
-  <li><a ui-sref="home">Projects</a></div>
-  <li><a ui-sref="members({projectId:ctrl.project.id})">Members</a></div>
-  <li class="active">{{ctrl.member.person.name}}</div>
+  <li><a ui-sref="home">Projects</a></li>
+  <li>
+    <span class="dropdown" dropdown >
+      <a href class="dropdown-toggle" dropdown-toggle>
+        Members
+      </a>
+      <ul class="dropdown-menu">
+        <li>
+          <a ui-sref="members({projectId:ctrl.project.id})">All</a>
+        </li>
+        <li>
+          <ul class="list-group" ng-repeat="team in ctrl.teams">
+            <li class="list-group-item active" >
+              {{team.name}}
+            </li>
+            <li class="list-group-item" ng-repeat="member in team.members | orderBy:'person.name'">
+              <img class="img-responsive" width="30" ng-src="{{member.person.imageUrl}}"> <a ui-sref="member({projectId: ctrl.project.id, memberId:member.person.id})"><small>{{member.person.name}}</small></a>
+            </li>
+          </ul>
+        </li>
+       
+      </ul>
+    </span>
+
+  </li>
+
+  <li class="active">{{ctrl.member.person.name}}</li>
 </ol>
 <div class="container">
   <div class="row">
@@ -65,7 +89,7 @@
         </div>
         <div class="list-group-item">
           <span class="badge">{{ctrl.stats.states.accepted}}</span>
-          <a ng-click="ctrl.filterByState('accepted')"><hs-state-label state="finished"/></a>
+          <a ng-click="ctrl.filterByState('accepted')"><hs-state-label state="accepted"/></a>
         </div>
         <div class="list-group-item">
           <span class="badge">{{ctrl.stats.states.planned}}</span>
@@ -119,7 +143,7 @@
               </a>
             </div>
              <div class="col-md-3">
-              <h3 class="panel-title">Current stories ({{filteredStories.length}})<small ng-if="ctrl.filter.state.current_state">[{{ctrl.filter.state.current_state | ucfirst}}]</small></h3>
+              <h3 class="panel-title">Current stories ({{filteredStories.length}}) <small ng-if="ctrl.filter.state.current_state">Filter: {{ctrl.filter.state.current_state | ucfirst}}</small></h3>
             </div>
           </div>
         </div>
@@ -147,7 +171,8 @@
                   <hs-state-label state="{{story.current_state}}"/>
                 </div>
                 <div class="col-lg-2">
-                  <span am-time-ago="story.created_at"></span>
+                  <small>Created: <span am-time-ago="story.created_at"></span></small>
+                  <small>Updated: <span am-time-ago="story.updated_at"></span></small>
                 </div>
                 
                 <div class="col-lg-2">
@@ -163,4 +188,7 @@
         </div>
       </div>
     </div>
+
+
+
 </div>

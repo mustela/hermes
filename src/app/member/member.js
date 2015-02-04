@@ -19,6 +19,12 @@ angular
           },
           member:function($stateParams, Pivotal){
             return Pivotal.member.get($stateParams.projectId, $stateParams.memberId);
+          },
+          members:function($stateParams, Pivotal){
+            return Pivotal.member.all($stateParams.projectId);
+          },
+          teams:function($stateParams, Pivotal){
+            return Pivotal.project.teams($stateParams.projectId);
           }
         }
       }
@@ -28,10 +34,13 @@ angular
 })
 
 
-.controller( 'MemberCtrl', function MemberController( $stateParams, project, query, Pivotal, member) {
+.controller( 'MemberCtrl', function MemberController( $stateParams, project, query, Pivotal, member, members, teams) {
   this.project  = project;
   this.query    = query;
   this.member   = member;
+  this.members  = members;
+  this.teams    = teams;
+
   this.filter   ={
     state:'',
     type:'',
