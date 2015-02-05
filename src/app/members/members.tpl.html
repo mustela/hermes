@@ -11,7 +11,7 @@
   <div class="row" ng-repeat="team in ctrl.teams">
     <div class="panel panel-default">
       <div class="panel-heading">
-         <img src="/assets/images/team.png" alt="" width="30"/> {{team.name}}
+         <img src="/assets/images/team.png" alt="" width="30"/> <a ui-sref="team({projectId:ctrl.project.id,teamId:team.id})">{{team.name}}</a>
       </div>
       <div class="panel-body">
         <div class="row">

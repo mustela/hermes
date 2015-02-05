@@ -1,92 +1,102 @@
-<div class="row">
-  <div class="col-sm-4">
-    <ul class="list-group">
-      <div class="list-group-item list-group-item-info">
-        Current stats
-      </div>
-      <div class="list-group-item">
-        <span class="badge">{{ctrl.query.stories.stories.length}}</span>
-        <i class="fa fa-minus"></i>
-        Total stories
-      </div>
-      <div class="list-group-item">
-        <span class="badge">{{ctrl.stats.types.feature}}</span>
-        <i class="fa fa-star text-warning" tooltip="Feature"></i>
-        Features
-      </div>
-      <div class="list-group-item">
-        <span class="badge">{{ctrl.stats.types.chore}}</span>
-        <i class="fa fa-cog text-info" tooltip="Chore"></i>
-        Chores
-      </div>
-      <div class="list-group-item">
-        <span class="badge">{{ctrl.stats.types.bug}}</span>
-        <i class="fa fa-bug text-danger" tooltip="Bug"></i>
-        Bugs
-      </div>
-    </ul>
-  </div>
-  <div class="col-sm-4">
-    <div class="list-group">
-      <div class="list-group-item list-group-item-info">
-        <a ng-click="ctrl.filterByState('')">States</a>
-      </div>
-      <div class="row">
-        <div class="col-sm-6">
-          <div class="list-group-item ">
-            <span class="badge">{{ctrl.stats.states.started}}</span>
-            <i class="fa fa-play text-success"></i>
-            <a class="active" ng-click="ctrl.filterByState('started')">Started</a>
-          </div>
-          <div class="list-group-item ">
-            <span class="badge">{{ctrl.stats.states.finished}}</span>
-            <i class="fa fa-check-circle-o text-success"></i>
-            <a class="active" ng-click="ctrl.filterByState('finished')">Finished</a>
-          </div>
-          <div class="list-group-item">
-            <span class="badge">{{ctrl.stats.states.accepted}}</span>
-            <i class="fa fa-smile-o text-success"></i>
-            <a ng-click="ctrl.filterByState('accepted')">Accepted</a>
-          </div>
-          <div class="list-group-item">
-            <span class="badge">{{ctrl.stats.states.planned}}</span>
-            <i class="fa fa-calendar text-success"></i>
-            <a ng-click="ctrl.filterByState('planned')">Planned</a>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="list-group-item">
-            <span class="badge">{{ctrl.stats.states.delivered}}</span>
-            <i class="fa fa-rocket text-warning"></i>
-            <a ng-click="ctrl.filterByState('delivered')">Delivered</a>
-          </div>
-          <div class="list-group-item">
-            <span class="badge">{{ctrl.stats.states.unstarted}}</span>
-            <i class="fa fa-square-o"></i>
-            <a ng-click="ctrl.filterByState('unstarted')">Unstarted</a>
-          </div>
-          <div class="list-group-item">
-            <span class="badge">{{ctrl.stats.states.unscheduled}}</span>
-            <i class="fa fa-calendar-o"></i>
-            <a ng-click="ctrl.filterByState('unscheduled')">Unscheduled</a>
-          </div>
-        </div>
-      </div>
-
+<div>
+  <div class="row">
+    <div class="col-lg-1">
+      <a class="thumbnail" >
+       <img class="img-responsive" width="90px" ng-src="{{member.person.imageUrl}}">
+      </a>
+    </div>
+    <div class="col-lg-6">
+     <h2>
+      {{member.person.name}} <small>({{member.person.email}})</small><br/>
+      <a href="https://www.pivotaltracker.com/n/projects/{{project.id}}" target="_blank"><small>{{project.name}}</small></a>
+      
+     </h2>
     </div>
   </div>
 
-  <div class="col-sm-4">
-    <div class="panel panel-default">
-      <div class="panel-heading" ng-click="ctrl.filterByLabel('')">Labels</div>
-      <div class="panel-body">
-        <ul class="list-inline">
-          <li ng-repeat="(key, value) in ctrl.stats.labels">
-            <a ng-click="ctrl.filterByLabel(key)">
-              <span  class="label label-warning">{{key}} <span class="badge">{{value}}</span></span>
-            </a>
-          </li>
-        </ul>
+  <div class="row">
+    <div class="col-sm-4">
+      <ul class="list-group">
+         <div class="list-group-item list-group-item-info">
+          Current stats
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{query.stories.stories.length}}</span>
+          <i class="fa fa-minus"></i>
+          Total stories
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{query.stats.types.feature}}</span>
+          <i class="fa fa-star text-warning" tooltip="Feature"></i>
+          Features
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{query.stats.types.chore}}</span>
+          <i class="fa fa-cog text-info" tooltip="Chore"></i>
+          Chores
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{query.stats.types.bug}}</span>
+          <i class="fa fa-bug text-danger" tooltip="Bug"></i>
+          Bugs
+        </div>
+      </ul>
+    </div>
+    <div class="col-sm-4">
+      <div class="list-group">
+        <div class="list-group-item list-group-item-info">
+          <a ng-click="filterByState('')">States</a>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="list-group-item ">
+          <span class="badge">{{query.stats.states.started}}</span>
+          <a class="active" ng-click="filterByState('started')"><hs-state-label state="started"/></a>
+        </div>
+        <div class="list-group-item ">
+          <span class="badge">{{query.stats.states.finished}}</span>
+          <a class="active" ng-click="filterByState('finished')"><hs-state-label state="finished"/></a>
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{query.stats.states.accepted}}</span>
+          <a ng-click="filterByState('accepted')"><hs-state-label state="accepted"/></a>
+        </div>
+        <div class="list-group-item">
+          <span class="badge">{{query.stats.states.planned}}</span>
+          <a ng-click="filterByState('planned')"><hs-state-label state="planned"/></a>
+        </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="list-group-item">
+              <span class="badge">{{query.stats.states.delivered}}</span>
+              <a ng-click="filterByState('delivered')"><hs-state-label state="delivered"/></a>
+            </div>
+            <div class="list-group-item">
+              <span class="badge">{{query.stats.states.unstarted}}</span>
+              <a ng-click="filterByState('unstarted')"><hs-state-label state="unstarted"/></a>
+            </div>
+            <div class="list-group-item">
+              <span class="badge">{{query.stats.states.unscheduled}}</span>
+              <a ng-click="filterByState('unscheduled')"><hs-state-label state="unscheduled"/></a>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+ 
+    <div class="col-sm-4">
+      <div class="panel panel-default">
+        <div class="panel-heading" ng-click="filterByLabel('')">Labels</div>
+        <div class="panel-body">
+            <ul class="list-inline">
+                <li ng-repeat="(key, value) in query.stats.labels">
+                  <a ng-click="filterByLabel(key)">
+                    <span  class="label label-warning">{{key}} <span class="badge">{{value}}</span></span>
+                  </a>
+                </li>
+            </ul>
+        </div>
       </div>
     </div>
   </div>

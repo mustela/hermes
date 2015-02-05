@@ -1,6 +1,6 @@
 
 angular
-.module('hermes.member',['components.stories.stateLabel'])
+.module('hermes.member',['components.stories.stateLabel', 'components.members.memberCard'])
 .config(function config( $stateProvider) {
 
   $stateProvider.state( 'member', {
@@ -40,32 +40,19 @@ angular
   this.member   = member;
   this.members  = members;
   this.teams    = teams;
+  this.stats    = query.stats;
 
   this.filter   ={
     state:'',
     type:'',
-    label:''
+    label:'',
+    strict:function(){
+      return this.state && angular.isDefined(this.state.current_state) && this.state.current_state.length>0;
+    }
   };
 
-  this.stats    = {
-    types:{
-      bug:0,
-      chore:0,
-      feature:0
-    },
-    states:{
-      delivered:0,
-      finished:0,
-      planned:0,
-      unscheduled:0,
-      unstarted:0,
-      accepted:0,
-      started:0
-    },
-    labels:{}
-  };
 
-  var self      = this;
+  var self= this;
   this.show = {
     description : false
   };
@@ -74,49 +61,22 @@ angular
     this.show.description = !this.show.description;
   };
 
-  angular.forEach(this.query.stories.stories,function(story){
-    self.stats.types[story.story_type]+=1;
-    self.stats.states[story.current_state]+=1;
-
-    angular.forEach(story.labels,function(label){
-      if (!angular.isDefined(self.stats.labels[label.name])){
-        self.stats.labels[label.name] = 0;
-      }
-
-      self.stats.labels[label.name]+=1;
-    });
-
-  });
-  console.log(self.stats.states);    
-  self.stats.states.unstartedTotal = self.stats.states.unstarted + self.stats.states.planned + self.stats.states.unscheduled;
-
-  this.query.done   = query.stories.total_hits_with_done - query.stories.total_hits;
-  this.query.total  = query.stories.total_hits_with_done + query.stories.total_hits;
-
-  this.filterByState = function(state){
-    this.filter.state = {current_state:state};
-  };
-
-  this.filterByLabel = function(label){
-    this.filter.label = label;
-  };
-
 
   this.labels = function(labelFilter) {
-    return function(story) {
-     if ( !labelFilter ){
-      return true;
-    }
-    var result = false;
-    angular.forEach(story.labels,function(label){
-      if (label.name == labelFilter){
-        return result = true;
+      return function(story) {
+       if ( !labelFilter ){
+        return true;
       }
-    });
+      var result = false;
+      angular.forEach(story.labels,function(label){
+        if (label.name == labelFilter){
+          return result = true;
+        }
+      });
 
-    return result;
+      return result;
+    };
   };
-};
 })
 
 ;

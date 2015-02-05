@@ -6,6 +6,7 @@ angular.module( 'hermes', [
   'hermes.about',
   'hermes.members',
   'hermes.member',
+  'hermes.team',
   'ui.router',
   'ui.bootstrap',
   'nvd3ChartDirectives',

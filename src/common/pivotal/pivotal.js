@@ -17,6 +17,7 @@
       this.apiToken = ApiConfig.pivotal.apiToken;
       this.rest = new Rest('https://www.pivotaltracker.com/services/v5/', {headers:{'X-TrackerToken':this.apiToken}});
       this.defaultProject = ApiConfig.pivotal.defaultProject;
+
     };
  
 
@@ -29,19 +30,72 @@
       this.projectApi = projectApi;
 
       Base.call(this);
+
     };
 
     Member.prototype = Object.create(Base.prototype);
 
     Member.prototype.stories = function(projectId, memberId){
-        return this.rest.get('projects/{projectId}/search?query=owner:{memberId} and -state:unscheduled'.supplant({projectId:projectId,memberId:memberId}));
+        var storiesDeferred = $q.defer();
+
+        
+        this.rest.get('projects/{projectId}/search?query=owner:{memberId} and -state:unscheduled'.supplant({projectId:projectId,memberId:memberId})).then(function(query){
+
+          /*
+
+          BUILD STATS
+
+          */
+          var stats = {
+            types:{
+              bug:0,
+              chore:0,
+              feature:0
+            },
+            states:{
+              delivered:0,
+              finished:0,
+              planned:0,
+              unscheduled:0,
+              unstarted:0,
+              accepted:0,
+              started:0
+            },
+            labels:{}
+          };
+
+          angular.forEach(query.stories.stories,function(story){
+            stats.types[story.story_type]+=1;
+            stats.states[story.current_state]+=1;
+
+            angular.forEach(story.labels,function(label){
+              if (!angular.isDefined(stats.labels[label.name])){
+                stats.labels[label.name] = 0;
+              }
+
+              stats.labels[label.name]+=1;
+            });
+
+          });
+          
+          stats.states.unstartedTotal = stats.states.unstarted + stats.states.planned + stats.states.unscheduled;
+
+          query.done   = query.stories.total_hits_with_done - query.stories.total_hits;
+          query.total  = query.stories.total_hits_with_done + query.stories.total_hits;
+          query.stats  = stats;
+          
+          storiesDeferred.resolve(query);
+
+        });
+
+        return storiesDeferred.promise;
     };
 
-    Member.prototype.get = function(projectId, memberId){
+    Member.prototype.get = function(projectId, memberId, include){
         var self = this;
         var memberFound = false;
         var deferred = $q.defer();
-
+        include = include || {};
 
         this.all(projectId).then(function(members){
           angular.forEach(members,function(member){
@@ -51,7 +105,17 @@
               if ( !angular.isDefined(member.imageUrl)){
                 member.person.imageUrl = Utils.prototype.getGravatarImageUrl(member.person.email);
               }
-              deferred.resolve(member);
+
+              if ( angular.isDefined(include.stories )){
+                self.stories(projectId, memberId).then(function(query){
+                  member.query = query;
+                  deferred.resolve(member);
+                });
+              }
+              else{
+                deferred.resolve(member);
+              }
+              
               return;
             }
           });
@@ -112,7 +176,8 @@
               angular.forEach(project.teams,function( configTeam ){
                 var team = {
                     name:configTeam.name,
-                    members:[] 
+                    id:configTeam.id,
+                    members:[]
                   };
 
                 angular.forEach(configTeam.members,function(memberTeam){
@@ -135,6 +200,57 @@
         return teamDeferred.promise;
       };
 
+    Project.prototype.team = function(projectId, teamId){
+
+        var teamDeferred = $q.defer();
+        var self = this;
+
+        if ( angular.isDefined(ApiConfig.pivotal.projects)){
+          angular.forEach(ApiConfig.pivotal.projects, function(project){
+            if ( project.id == projectId){
+              
+              angular.forEach(project.teams,function( configTeam ){
+
+                if ( configTeam.id == teamId ){
+                  var team = {
+                    name:configTeam.name,
+                    id:configTeam.id,
+                    members:[] 
+                  };
+                  
+                  var query = false;
+
+                  angular.forEach(configTeam.members,function(memberTeam){
+                    if ( !query ){
+                      query = 'owner:{memberId}'.supplant({memberId:memberTeam});
+                    }
+                    else{
+                      query += ' or owner:{memberId}'.supplant({memberId:memberTeam});
+                    }
+
+                    self.memberApi.get(projectId, memberTeam ).then(function(membership){
+                      team.members.push(membership);
+                    });
+                  });
+        
+                  console.log(query);
+                  self.rest.get('projects/{projectId}/search?query=({query}) and -state:unscheduled'.supplant({projectId:projectId,query:query})).then(function(query){
+
+                    team.query = query;
+                    teamDeferred.resolve(team);
+                  });
+
+                  return;
+                }
+                
+              });
+            }
+          });
+        }
+
+        return teamDeferred.promise;
+    };
+
     Project.prototype.get = function(projectId){
         return this.rest.get('projects/{projectId}'.supplant({projectId:projectId}));
     };
@@ -146,8 +262,8 @@
     var Api = function(){
     };
 
-    Api.prototype.project = new Project(Object.create(Member.prototype));
-    Api.prototype.member = new Member(Object.create(Project.prototype));
+    Api.prototype.project = new Project(new Member());
+    Api.prototype.member = new Member(new Project());
 
     return new Api();
 
