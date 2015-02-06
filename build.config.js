@@ -63,9 +63,9 @@ module.exports = {
    */
   vendor_files: {
     js: [
+      'vendor/jquery/dist/jquery.min.js',
       'vendor/angular/angular.js',
       'vendor/angular-animate/angular-animate.min.js',
-      'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
       'vendor/placeholders/angular-placeholders-0.0.1-SNAPSHOT.min.js',
       'vendor/angular-ui-router/release/angular-ui-router.js',
       'vendor/angular-ui-utils/modules/route/route.js',
@@ -78,7 +78,9 @@ module.exports = {
       'vendor/angular-filter/dist/angular-filter.min.js',
       'vendor/d3/d3.min.js',
       'vendor/nvd3/nv.d3.min.js',
-      'vendor/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.min.js'
+      'vendor/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.min.js',
+      'vendor/angular-strap/dist/angular-strap.js',
+      'vendor/angular-strap/dist/angular-strap.tpl.js'
     ],
     css: [
       'vendor/angular-loading-bar/build/loading-bar.css',

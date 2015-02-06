@@ -89,7 +89,7 @@
         var storiesDeferred = $q.defer();
 
         
-        this.rest.get('projects/{projectId}/search?query=owner:{memberId} and -state:unscheduled'.supplant({projectId:projectId,memberId:memberId})).then(function(query){
+        this.rest.get('projects/{projectId}/search?query=owner:{memberId} and -state:unscheduled&fields=stories(stories(:default,comments,owned_by))'.supplant({projectId:projectId,memberId:memberId})).then(function(query){
 
           query = buildStats(query);
           
@@ -242,7 +242,7 @@
                     });
                   });
         
-                  self.rest.get('projects/{projectId}/search?query=({query})&fields=:default,stories(stories(owned_by)) and -state:unscheduled'.supplant({projectId:projectId,query:query})).then(function(query){
+                  self.rest.get('projects/{projectId}/search?query=({query}) and -state:unscheduled&fields=stories(stories(:default,comments,owned_by))'.supplant({projectId:projectId,query:query})).then(function(query){
 
                     query = buildStats(query);
 
@@ -264,7 +264,7 @@
     Project.prototype.icebox = function(projectId){
       var iceboxDefer = $q.defer();
 
-       this.rest.get('projects/{projectId}/search?query=state:unscheduled&fields=:default,stories(stories(owned_by))'.supplant({projectId:projectId})).then(function(query){
+       this.rest.get('projects/{projectId}/search?query=state:unscheduled&fields=stories(stories(:default,comments,owned_by))'.supplant({projectId:projectId})).then(function(query){
           query = buildStats(query);
 
           iceboxDefer.resolve(query);

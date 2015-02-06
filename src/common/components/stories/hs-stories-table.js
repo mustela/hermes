@@ -9,7 +9,8 @@
       restrict:'E',
       templateUrl:'components/stories/hs-stories-table.tpl.html',
       scope:{
-        query:'='
+        query:'=',
+        showOwner:'='
       },
       link:function(scope,element,attrs) {
 

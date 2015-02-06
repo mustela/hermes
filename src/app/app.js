@@ -9,7 +9,7 @@ angular.module( 'hermes', [
   'hermes.team',
   'hermes.icebox',
   'ui.router',
-  'ui.bootstrap',
+  'mgcrea.ngStrap',
   'nvd3ChartDirectives',
   'angularMoment',
   'angular.filter'

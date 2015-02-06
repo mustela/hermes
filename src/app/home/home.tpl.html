@@ -18,7 +18,7 @@
       <tbody>
         <tr ng-repeat="project in ctrl.projects">
           <th scope="row">
-            <a href="https://www.pivotaltracker.com/n/projects/{{project.id}}" tooltip="Open in Pivotal" target="_blank">{{project.id}}</a>
+            <small><a href="https://www.pivotaltracker.com/n/projects/{{project.id}}" tooltip="Open in Pivotal" target="_blank">{{project.id}}</a></small>
           </th>
           <td>
             <a ui-sref="members({projectId:project.id})">{{project.name}}</a>

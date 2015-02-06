@@ -100,12 +100,12 @@
         <th>State</th>
         <th>Updated</th>
         <th>Created</th>
-        <th>Onwer</th>
+        <th ng-if="showOwner">Onwer</th>
       </tr>
     </thead>
     <tbody>
       <tr ng-repeat="story in filteredStories = (query.stories.stories |filter:filter.state:filter.strict()|filter:labels(filter.label)| orderBy:['story_type','created_at']:true)">
-        <th scope="row"><a target="_blank" href="https://www.pivotaltracker.com/story/show/{{story.id}}">{{story.id}}</a></th>
+        <th scope="row"><small><a target="_blank" href="https://www.pivotaltracker.com/story/show/{{story.id}}">{{story.id}}</a></small></th>
         <td>
           <i ng-if="story.story_type=='feature'" class="fa fa-star text-warning" tooltip="Feature"></i>
           <i ng-if="story.story_type=='chore'" class="fa fa-cog text-info" tooltip="Chore"></i>
@@ -114,7 +114,7 @@
           <i ng-if="story.story_type=='feature' && !story.estimate" class="fa fa-exclamation-triangle text-danger" tooltip="Need estimation"></i>
         </td>
         <td>
-          {{story.name}}
+          <span data-html="true" container='body' ng-model="story.comments" data-template="components/stories/hs-comments.tpl.html" data-animation="am-flip-x" data-auto-close="1" bs-popover ><i ng-if="story.comments.length" class="fa fa-comments"></i></span>&nbsp;{{story.name}}
           <p ng-show="show.description" class="animated" ng-class="{'fadeIn':show.description}"><small>{{story.description}}</small></p>
         </td>
         <td>
@@ -122,10 +122,11 @@
             <strong>{{label.name}}{{$last ? '' : ', '}}</strong>
           </small>
         </td>
-        <td><hs-state-label state="{{story.current_state}}"/></td>
-        <td><span am-time-ago="story.updated_at"></span></td>
-        <td><span am-time-ago="story.created_at"></span></td>
-        <td><small>{{story.owned_by.name}}</small></td>
+        <td><small><hs-state-label state="{{story.current_state}}"/></small></td>
+
+        <td><small><span am-time-ago="story.updated_at"></span></small></td>
+        <td><small><span am-time-ago="story.created_at"></span></small></td>
+        <td ng-if="showOwner"><small>{{story.owned_by.name}}</small></td>
       </tr>
 
       <tr>
@@ -140,4 +141,22 @@
     </tbody>
   </table>
 </div>
+
+ 
+
+<script id="components/stories/hs-comments.tpl.html" type="text/ng-template">
+  <div class="popover">
+    <div class="arrow"></div>
+    <h3 class="popover-title" ng-bind="title" ng-show="title"></h3>
+    <div class="popover-content" > 
+      <ul ng-repeat="comment in story.comments">
+        <li ng-if="comment.text">
+          {{comment.text}} <small class="label label-warning"><span am-time-ago="comment.created_at"></span></small>
+        </li>
+      </ul>
+    </div>
+  </div>
+</script>
+
 </div>
+

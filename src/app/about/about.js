@@ -1,6 +1,5 @@
 angular.module( 'hermes.about', [
-  'ui.router',
-  'ui.bootstrap'
+  'ui.router'
 ])
 
 .config(function config( $stateProvider ) {
@@ -17,12 +16,7 @@ angular.module( 'hermes.about', [
 })
 
 .controller( 'AboutCtrl', function AboutCtrl( $scope ) {
-  // This is simple a demo for UI Boostrap.
-  $scope.dropdownDemoItems = [
-    "The first choice!",
-    "And another choice for you.",
-    "but wait! A third!"
-  ];
+ 
 })
 
 ;
