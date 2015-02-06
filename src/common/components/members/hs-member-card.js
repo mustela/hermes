@@ -10,20 +10,11 @@
         templateUrl:'components/members/hs-member-card.tpl.html',
         scope:{
           project:'=', 
-          member:'=',
-          query:'=',
-          selectedState:'=',
-          selectedLabel:'='
+          member:'='
         },
         link:function(scope,element,attrs){
 
-          scope.filterByState = function(state){
-            this.selectedState = {current_state:state};
-          };
-
-          scope.filterByLabel = function(label){
-            this.selectedLabel = label;
-          };
+          
 
         }
     };

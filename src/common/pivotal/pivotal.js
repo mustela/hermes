@@ -35,17 +35,13 @@
 
     Member.prototype = Object.create(Base.prototype);
 
-    Member.prototype.stories = function(projectId, memberId){
-        var storiesDeferred = $q.defer();
+    /*
 
-        
-        this.rest.get('projects/{projectId}/search?query=owner:{memberId} and -state:unscheduled'.supplant({projectId:projectId,memberId:memberId})).then(function(query){
+    BUILD STATS
 
-          /*
-
-          BUILD STATS
-
-          */
+    */
+    function buildStats(query){
+      
           var stats = {
             types:{
               bug:0,
@@ -83,6 +79,19 @@
           query.done   = query.stories.total_hits_with_done - query.stories.total_hits;
           query.total  = query.stories.total_hits_with_done + query.stories.total_hits;
           query.stats  = stats;
+
+          return query;
+
+    }
+
+
+    Member.prototype.stories = function(projectId, memberId){
+        var storiesDeferred = $q.defer();
+
+        
+        this.rest.get('projects/{projectId}/search?query=owner:{memberId} and -state:unscheduled'.supplant({projectId:projectId,memberId:memberId})).then(function(query){
+
+          query = buildStats(query);
           
           storiesDeferred.resolve(query);
 
@@ -233,8 +242,9 @@
                     });
                   });
         
-                  console.log(query);
-                  self.rest.get('projects/{projectId}/search?query=({query}) and -state:unscheduled'.supplant({projectId:projectId,query:query})).then(function(query){
+                  self.rest.get('projects/{projectId}/search?query=({query})&fields=:default,stories(stories(owned_by)) and -state:unscheduled'.supplant({projectId:projectId,query:query})).then(function(query){
+
+                    query = buildStats(query);
 
                     team.query = query;
                     teamDeferred.resolve(team);
@@ -249,6 +259,18 @@
         }
 
         return teamDeferred.promise;
+    };
+
+    Project.prototype.icebox = function(projectId){
+      var iceboxDefer = $q.defer();
+
+       this.rest.get('projects/{projectId}/search?query=state:unscheduled&fields=:default,stories(stories(owned_by))'.supplant({projectId:projectId})).then(function(query){
+          query = buildStats(query);
+
+          iceboxDefer.resolve(query);
+       });
+
+       return iceboxDefer.promise;
     };
 
     Project.prototype.get = function(projectId){

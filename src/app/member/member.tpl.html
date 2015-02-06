@@ -12,7 +12,7 @@
         <li>
           <ul class="list-group" ng-repeat="team in ctrl.teams">
             <li class="list-group-item active" >
-              {{team.name}}
+              <a ui-sref="team({projectId:ctrl.project.id,teamId:team.id})">{{team.name}}</a>
             </li>
             <li class="list-group-item" ng-repeat="member in team.members | orderBy:'person.name'">
               <img class="img-responsive" width="30" ng-src="{{member.person.imageUrl}}"> <a ui-sref="member({projectId: ctrl.project.id, memberId:member.person.id})"><small>{{member.person.name}}</small></a>
@@ -31,58 +31,7 @@
   
   <hs-member-card project="ctrl.project" member="ctrl.member" query="ctrl.query" selected-label="ctrl.filter.label" selected-state="ctrl.filter.state"></hs-member-card>
    
-
-  
-<table class="table">
-  <caption>Current stories ({{filteredStories.length}}) <small ng-if="ctrl.filter.state.current_state">Filter: {{ctrl.filter.state.current_state | ucfirst}}</small></caption>
-
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Type</th>
-      <th>Name</th>
-      <th>Labels</th>
-      <th>State</th>
-      <th>Updated</th>
-      <th>Created</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr ng-repeat="story in filteredStories = (ctrl.query.stories.stories |filter:ctrl.filter.state:ctrl.filter.strict()|filter:ctrl.labels(ctrl.filter.label)| orderBy:['story_type','created_at']:true)">
-      <th scope="row"><a target="_blank" href="https://www.pivotaltracker.com/story/show/{{story.id}}">{{story.id}}</a></th>
-      <td>
-        <i ng-if="story.story_type=='feature'" class="fa fa-star text-warning" tooltip="Feature"></i>
-        <i ng-if="story.story_type=='chore'" class="fa fa-cog text-info" tooltip="Chore"></i>
-        <i ng-if="story.story_type=='bug'" class="fa fa-bug text-danger" tooltip="Bug"></i>
-        <i ng-if="story.story_type=='release'" class="fa fa-flag-checkered" tooltip="Release"></i>
-        <i ng-if="story.story_type=='feature' && !story.estimate" class="fa fa-exclamation-triangle text-danger" tooltip="Need estimation"></i>
-      </td>
-      <td>
-        {{story.name}}
-        <p ng-show="ctrl.show.description" class="animated" ng-class="{'fadeIn':ctrl.show.description}"><small>{{story.description}}</small></p>
-      </td>
-      <td>
-        <small class="text-warning" ng-repeat="label in story.labels">
-          <strong>{{label.name}}{{$last ? '' : ', '}}</strong>
-        </small>
-      </td>
-      <td><hs-state-label state="{{story.current_state}}"/></td>
-      <td><span am-time-ago="story.updated_at"></span></td>
-      <td><span am-time-ago="story.created_at"></span></td>
-    </tr>
-
-    <tr>
-      <td colspan="7">
-        <div ng-show="filteredStories.length==0">
-          <div class="bs-callout bs-callout-default" >
-            <h4>No results for [{{ctrl.filter.state}}]</h4>
-          </div>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
+  <hs-stories-table query="ctrl.query"></hs-stories-table>
 
 
 </div>

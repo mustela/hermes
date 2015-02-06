@@ -1,0 +1,143 @@
+<div>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <ul class="list-group">
+       <div class="list-group-item list-group-item-info">
+        Current stats
+      </div>
+      <div class="list-group-item">
+        <span class="badge">{{query.stories.stories.length}}</span>
+        <i class="fa fa-minus"></i>
+        Total stories
+      </div>
+      <div class="list-group-item">
+        <span class="badge">{{query.stats.types.feature}}</span>
+        <i class="fa fa-star text-warning" tooltip="Feature"></i>
+        Features
+      </div>
+      <div class="list-group-item">
+        <span class="badge">{{query.stats.types.chore}}</span>
+        <i class="fa fa-cog text-info" tooltip="Chore"></i>
+        Chores
+      </div>
+      <div class="list-group-item">
+        <span class="badge">{{query.stats.types.bug}}</span>
+        <i class="fa fa-bug text-danger" tooltip="Bug"></i>
+        Bugs
+      </div>
+    </ul>
+  </div>
+  <div class="col-sm-4">
+    <div class="list-group">
+      <div class="list-group-item list-group-item-info">
+        <a ng-click="filterByState('')">States</a>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="list-group-item ">
+            <span class="badge">{{query.stats.states.started}}</span>
+            <a class="active" ng-click="filterByState('started')"><hs-state-label state="started"/></a>
+          </div>
+          <div class="list-group-item ">
+            <span class="badge">{{query.stats.states.finished}}</span>
+            <a class="active" ng-click="filterByState('finished')"><hs-state-label state="finished"/></a>
+          </div>
+          <div class="list-group-item">
+            <span class="badge">{{query.stats.states.accepted}}</span>
+            <a ng-click="filterByState('accepted')"><hs-state-label state="accepted"/></a>
+          </div>
+          <div class="list-group-item">
+            <span class="badge">{{query.stats.states.planned}}</span>
+            <a ng-click="filterByState('planned')"><hs-state-label state="planned"/></a>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="list-group-item">
+            <span class="badge">{{query.stats.states.delivered}}</span>
+            <a ng-click="filterByState('delivered')"><hs-state-label state="delivered"/></a>
+          </div>
+          <div class="list-group-item">
+            <span class="badge">{{query.stats.states.unstarted}}</span>
+            <a ng-click="filterByState('unstarted')"><hs-state-label state="unstarted"/></a>
+          </div>
+          <div class="list-group-item">
+            <span class="badge">{{query.stats.states.unscheduled}}</span>
+            <a ng-click="filterByState('unscheduled')"><hs-state-label state="unscheduled"/></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="col-sm-4">
+    <div class="panel panel-default">
+      <div class="panel-heading" ng-click="filterByLabel('')">Labels</div>
+      <div class="panel-body">
+        <ul class="list-inline">
+          <li ng-repeat="(key, value) in query.stats.labels">
+            <a ng-click="filterByLabel(key)">
+              <span  class="label label-warning">{{key}} <span class="badge">{{value}}</span></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <table class="table">
+    <caption>Current stories ({{filteredStories.length}}) <small ng-if="filter.state.current_state">Filter: {{filter.state.current_state | ucfirst}}</small></caption>
+
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Labels</th>
+        <th>State</th>
+        <th>Updated</th>
+        <th>Created</th>
+        <th>Onwer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="story in filteredStories = (query.stories.stories |filter:filter.state:filter.strict()|filter:labels(filter.label)| orderBy:['story_type','created_at']:true)">
+        <th scope="row"><a target="_blank" href="https://www.pivotaltracker.com/story/show/{{story.id}}">{{story.id}}</a></th>
+        <td>
+          <i ng-if="story.story_type=='feature'" class="fa fa-star text-warning" tooltip="Feature"></i>
+          <i ng-if="story.story_type=='chore'" class="fa fa-cog text-info" tooltip="Chore"></i>
+          <i ng-if="story.story_type=='bug'" class="fa fa-bug text-danger" tooltip="Bug"></i>
+          <i ng-if="story.story_type=='release'" class="fa fa-flag-checkered" tooltip="Release"></i>
+          <i ng-if="story.story_type=='feature' && !story.estimate" class="fa fa-exclamation-triangle text-danger" tooltip="Need estimation"></i>
+        </td>
+        <td>
+          {{story.name}}
+          <p ng-show="show.description" class="animated" ng-class="{'fadeIn':show.description}"><small>{{story.description}}</small></p>
+        </td>
+        <td>
+          <small class="text-warning" ng-repeat="label in story.labels">
+            <strong>{{label.name}}{{$last ? '' : ', '}}</strong>
+          </small>
+        </td>
+        <td><hs-state-label state="{{story.current_state}}"/></td>
+        <td><span am-time-ago="story.updated_at"></span></td>
+        <td><span am-time-ago="story.created_at"></span></td>
+        <td><small>{{story.owned_by.name}}</small></td>
+      </tr>
+
+      <tr>
+        <td colspan="7">
+          <div ng-show="filteredStories.length==0">
+            <div class="bs-callout bs-callout-default" >
+              <h4>No results for [{{filter.state}}]</h4>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>

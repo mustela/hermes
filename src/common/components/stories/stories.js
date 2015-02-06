@@ -2,6 +2,6 @@
   'use strict';
 
   angular
-  .module('components.stories',['components.stories.stateLabel']);
+  .module('components.stories',['components.stories.stateLabel','components.stories.storiesTable']);
   
 })();
